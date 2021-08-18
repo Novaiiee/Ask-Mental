@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import { Feature } from "./Feature";
 import undrawAsking from "../../assets/images/undraw_asking.svg";
 import undrawAnswer from "../../assets/images/undraw_answer.svg";

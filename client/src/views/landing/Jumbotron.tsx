@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import undrawJumbotronImage from "../../assets/images/undraw_jumbotron.svg";
 import { Navbar } from "../../components/Navbar";
 

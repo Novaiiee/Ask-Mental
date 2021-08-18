@@ -29,11 +29,20 @@ router.post(
 		}
 	},
 	passport.authenticate("local"),
-	(req: Request, res: Response) => res.status(201).send(req.user)
+	(req: Request, res: Response) => res.status(201).send({ user: req.user })
 );
 
-router.post("/login", verifyAuthBody("login"), passport.authenticate("local"), (req, res) => {
-	res.status(200).send(req.user);
+router.post("/login", verifyAuthBody("login"), (req, res, next) => {
+	passport.authenticate("local", (error, user) => {
+		if (error) return res.status(400).send({ error });
+		if (!user) return res.status(400).send({ error: "User not found" });
+		
+		req.logIn(user, (error) => {
+			if (error) return res.status(400).send({ error });
+			return res.status(200).send({ user });
+		});
+	})(req, res, next);
 });
 
 export { router as authRoute };
+

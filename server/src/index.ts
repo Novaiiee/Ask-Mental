@@ -1,4 +1,4 @@
-import connectMongo from "connect-mongodb-session";
+import MongoStore from "connect-mongo";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import "dotenv/config";
@@ -10,8 +10,8 @@ import { setupPassport } from "./passport";
 import { authRoute } from "./routes/auth.route";
 import { questionsRoute } from "./routes/questions.route";
 
-const MongoStore = connectMongo(session);
 const app = express();
+const expireDate = 1000 * 60 * 60 * 24;
 
 mongoose
 	.connect(process.env.MONGO ?? "", {
@@ -22,24 +22,27 @@ mongoose
 	})
 	.then(() => console.log("Connected to DB"));
 
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use(cors());
+
+const store = MongoStore.create({
+	collectionName: "ask-mental-session",
+	mongoUrl: process.env.MONGO,
+	ttl: expireDate,
+	autoRemove: "native",
+});
 
 app.use(
 	session({
-		store: new MongoStore({
-			collection: "ask-mental-session",
-			uri: process.env.MONGO ?? "",
-			expires: 1000 * 60 * 60 * 24,
-		}),
+		store,
 		secret: process.env.SESSION_SECRET ?? "",
 		cookie: {
-			maxAge: 1000 * 60 * 60 * 24,
+			maxAge: expireDate,
 		},
 		resave: true,
-		saveUninitialized: false,
+		saveUninitialized: true,
 	})
 );
 

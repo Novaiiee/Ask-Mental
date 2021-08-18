@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import { Footer } from "../../components/Footer";
 import { Features } from "./Features";
 import { Jumbotron } from "./Jumbotron";
